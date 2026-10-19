@@ -29,6 +29,13 @@
   src: url("/assets/fonts/TWKEverett-Bold.woff2");
 }
 
+@font-face {
+  font-family: "TWKEverett-Medium";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/assets/fonts/TWKEverett-Medium.woff2");
+}
+
 .font-geist-medium {
   font-family: "SuisseIntl-Medium", Helvetica, sans-serif;
   font-weight: normal;
@@ -36,6 +43,11 @@
 
 .font-everett {
   font-family: "TWKEverett-Bold", Helvetica, sans-serif;
+  font-weight: normal;
+}
+
+.font-everett-medium {
+  font-family: "TWKEverett-Medium", Helvetica, sans-serif;
   font-weight: normal;
 }
 
