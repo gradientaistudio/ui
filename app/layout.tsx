@@ -4,8 +4,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Colosso UI",
-    template: "%s · Colosso UI",
+    default: "Gradient UI",
+    template: "%s · Gradient UI",
   },
   description:
     "Open source React and Tailwind CSS UI components, designed to kickstart your next project.",

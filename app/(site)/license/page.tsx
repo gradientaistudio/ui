@@ -4,7 +4,7 @@ import LegalToggle from "@/components/legal-toggle";
 
 export const metadata: Metadata = {
   title: "License",
-  description: "Colosso UI is open source software licensed under the MIT License.",
+  description: "Gradient UI is open source software licensed under the MIT License.",
 };
 
 export default function LicensePage() {
@@ -19,7 +19,7 @@ export default function LicensePage() {
         <LegalToggle view="license" />
         <div className="mx-auto mt-8 max-w-2xl space-y-4 text-sm leading-relaxed text-black/80 dark:text-white/80">
             <h2 className="text-base font-medium text-black dark:text-white">MIT License</h2>
-            <p>© 2026 Colosso Studio</p>
+            <p>© 2026 Gradient AI</p>
             <p>
               Permission is hereby granted, free of charge, to any person obtaining a copy of this
               software and associated documentation files (the &quot;Software&quot;), to deal in the

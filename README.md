@@ -1,8 +1,8 @@
-# Colosso UI
+# Gradient UI
 
 Open source [React](https://react.dev) and [Tailwind CSS](https://tailwindcss.com) components and icons, meant to drop into a project and start from there.
 
-The catalog lives at [ui.colosso.studio](https://ui.colosso.studio). Source is on GitHub at [colossostudio/ui](https://github.com/colossostudio/ui).
+The catalog lives at [ui.colosso.studio](https://ui.colosso.studio). Source is on GitHub at [gradientaistudio/ui](https://github.com/gradientaistudio/ui).
 
 ## What’s here
 

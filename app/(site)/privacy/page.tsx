@@ -4,7 +4,7 @@ import LegalToggle from "@/components/legal-toggle";
 
 export const metadata: Metadata = {
   title: "Privacy",
-  description: "How Colosso UI handles privacy and site analytics.",
+  description: "How Gradient UI handles privacy and site analytics.",
 };
 
 export default function PrivacyPage() {
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
             <p>
               If you have questions about this privacy notice, you can open an issue on the{" "}
               <a
-                href="https://github.com/colossostudio/ui"
+                href="https://github.com/gradientaistudio/ui"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-black underline underline-offset-2 dark:text-white"

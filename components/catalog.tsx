@@ -116,7 +116,7 @@ export default function Catalog({ view }: { view: "components" | "icons" }) {
   return (
     <div className="flex flex-1 flex-col">
       <div className="mx-auto w-full max-w-[1120px] px-6 pt-14 pb-8 sm:pt-16 sm:pb-10">
-        <h1 className="mx-auto max-w-[24em] text-center text-[1.7rem] leading-[1.12] tracking-[-0.05em] text-black sm:text-[2.5rem] dark:text-white">
+        <h1 className="font-everett mx-auto max-w-[24em] text-center text-[1.7rem] uppercase leading-[1.12] text-black sm:text-[2.5rem] dark:text-white">
           Open source React and Tailwind CSS UI components, designed to kickstart your next project.
         </h1>
       </div>

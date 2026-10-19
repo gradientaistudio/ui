@@ -4,6 +4,7 @@
 
 @theme inline {
   --color-charcoal: #1b1b1e;
+  --color-vanilla: #faf9f3;
   --font-sans: "SuisseIntl-Regular", Helvetica, sans-serif;
 }
 
@@ -21,22 +22,31 @@
   src: url("/assets/fonts/SuisseIntl-Medium.woff2");
 }
 
+@font-face {
+  font-family: "TWKEverett-Bold";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/assets/fonts/TWKEverett-Bold.woff2");
+}
+
 .font-geist-medium {
   font-family: "SuisseIntl-Medium", Helvetica, sans-serif;
+  font-weight: normal;
+}
+
+.font-everett {
+  font-family: "TWKEverett-Bold", Helvetica, sans-serif;
   font-weight: normal;
 }
 
 body {
   font-family: "SuisseIntl-Regular", Helvetica, sans-serif;
   background-color: #fff;
-  background-image: radial-gradient(rgba(0, 0, 0, 0.14) 0.5px, transparent 0.5px);
-  background-size: 12px 12px;
   color: #171717;
 }
 
 .dark body {
   background-color: #151515;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 0.5px, transparent 0.5px);
   color: #fff;
 }
 

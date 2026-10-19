@@ -6,7 +6,7 @@ export default function ContentSheet({
   className?: string;
 }) {
   return (
-    <section className={`flex flex-1 flex-col rounded-[2rem] bg-[#f5f5f7] dark:bg-[#111] ${className}`}>
+    <section className={`flex flex-1 flex-col rounded-[2rem] bg-black/3 dark:bg-[#111] ${className}`}>
       <div className="mx-auto w-full max-w-[1120px] flex-1 px-6 pt-8 pb-10">{children}</div>
     </section>
   );

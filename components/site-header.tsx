@@ -1,24 +1,24 @@
 import Link from "next/link";
 import ThemeToggle from "@/components/theme-toggle";
 
-function ColossoMark({ className }: { className?: string }) {
+function GradientMark({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 440 440"
+      viewBox="0 0 540 540"
       className={className}
       aria-hidden
     >
       <rect
-        width="440"
-        height="440"
-        rx="120"
-        ry="120"
-        className="fill-[#1a1a1a] dark:fill-white"
+        width="540"
+        height="540"
+        rx="147.27"
+        ry="147.27"
+        className="fill-black dark:fill-white"
       />
       <path
-        className="fill-white dark:fill-[#1a1a1a]"
-        d="M316.12,263.69c-18.49,25.67-52.72,42.95-91.84,42.95-58.69,0-106.44-38.87-106.44-86.64s47.75-86.64,106.44-86.64c39.12,0,73.35,17.28,91.84,42.95l38.06-17.3c-25.06-39.88-73.89-67.01-129.9-67.01-81.49,0-147.8,57.42-147.8,128s66.3,128,147.8,128c56.01,0,104.84-27.13,129.9-67.01l-38.06-17.3Z"
+        className="fill-[#faf9f3] dark:fill-black"
+        d="M253.12,135v67.5c0,27.96-22.67,50.62-50.63,50.62h-67.5v33.75h67.5c27.96,0,50.63,22.67,50.63,50.63v67.5h33.75v-67.5c0-27.96,22.67-50.63,50.63-50.63h67.5v-33.75h-67.5c-27.96,0-50.63-22.67-50.63-50.62v-67.5h-33.75Z"
       />
     </svg>
   );
@@ -28,15 +28,15 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
   return (
     <header className="mx-auto flex w-full max-w-[1120px] items-center justify-between px-6 py-5">
       <Link href="/" className="flex items-center gap-2 text-black dark:text-white">
-        <ColossoMark className="size-7" />
-        <span className="text-[1.125rem] leading-none tracking-[-0.03em]">Colosso UI</span>
+        <GradientMark className="size-7" />
+        <span className="font-everett text-[1.125rem] uppercase leading-none">Gradient UI</span>
       </Link>
       <div className="flex items-center gap-2">
         <a
-          href="https://github.com/colossostudio/ui"
+          href="https://github.com/gradientaistudio/ui"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Colosso UI on GitHub"
+          aria-label="Gradient UI on GitHub"
           className="cursor-pointer p-2 text-black transition-all duration-300 hover:scale-90 dark:text-white"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-5">
