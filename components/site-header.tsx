@@ -29,7 +29,7 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
     <header className="mx-auto flex w-full max-w-[1120px] items-center justify-between px-6 py-5">
       <Link href="/" className="flex items-center gap-2 text-black dark:text-white">
         <GradientMark className="size-7" />
-        <span className="font-everett text-[1.125rem] uppercase leading-none">Gradient UI</span>
+        <span className="font-everett-medium text-[1.125rem] uppercase leading-none">Gradient UI</span>
       </Link>
       <div className="flex items-center gap-2">
         <a
