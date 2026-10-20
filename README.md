@@ -2,7 +2,7 @@
 
 Open source [React](https://react.dev) and [Tailwind CSS](https://tailwindcss.com) components and icons, meant to drop into a project and start from there.
 
-The catalog lives at [ui.colosso.studio](https://ui.colosso.studio). Source is on GitHub at [gradientaistudio/ui](https://github.com/gradientaistudio/ui).
+The catalog lives at [ui.gradientai.studio](https://ui.gradientai.studio). Source is on GitHub at [gradientaistudio/ui](https://github.com/gradientaistudio/ui).
 
 ## What’s here
 
