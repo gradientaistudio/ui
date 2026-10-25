@@ -2328,9 +2328,16 @@ const Icons: FC<IconsProps> = ({
           </div>
         </div>
       )}
-      <div className={variant === 'single-column' ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2'}>
+      <div className={variant === 'single-column' ? 'grid grid-cols-1 gap-5' : 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2'}>
         {filteredIcons.map((icon) => (
-          <div key={icon.name} className="flex flex-col items-center justify-center py-4 px-1 bg-white rounded-2xl dark:bg-[#1a1a1a]">
+          <div
+            key={icon.name}
+            className={
+              variant === 'single-column'
+                ? 'flex flex-col items-center justify-center rounded-2xl border border-black/10 bg-white px-1 py-4 shadow-[0_8px_24px_rgba(0,0,0,0.06)] dark:border-white/15 dark:bg-[#1a1a1a] dark:shadow-[0_8px_24px_rgba(0,0,0,0.35)]'
+                : 'flex flex-col items-center justify-center rounded-2xl bg-white px-1 py-4 dark:bg-[#1a1a1a]'
+            }
+          >
             <div className="py-4 text-black dark:text-white">{icon.renderedicon}</div>
             <span className="text-xs my-2 text-black/55 dark:text-white/55">{icon.name}</span>
             <div className="flex justify-between items-center">

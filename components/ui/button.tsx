@@ -16,7 +16,7 @@ export default function Button({
   className = '',
 }: ButtonProps) {
   const baseClasses =
-    'cursor-pointer inline-block py-2 px-6 rounded-full bg-black/5 hover:bg-black/10 text-black transition-all duration-300 dark:bg-white/10 dark:hover:bg-white/15 dark:text-white';
+    "cursor-pointer inline-block rounded-full bg-charcoal px-6 py-2 text-white transition-opacity duration-300 hover:opacity-80 dark:bg-white dark:text-charcoal dark:hover:opacity-80";
 
   if (href) {
     return (

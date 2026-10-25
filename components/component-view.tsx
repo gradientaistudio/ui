@@ -19,7 +19,7 @@ export default function ComponentView({
     <div className="flex flex-1 flex-col">
       <div className="mx-auto flex w-full max-w-[1120px] flex-col items-center px-6 pt-14 pb-8 sm:pt-16 sm:pb-10">
         <RippleIconButton
-          href="/"
+          href="/components"
           external={false}
           ariaLabel="Back to components"
           className="mb-6 gap-1.5 py-1.5 pr-3.5 pl-2.5 text-sm font-medium"

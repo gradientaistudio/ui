@@ -11,7 +11,7 @@ export default function PrivacyPage() {
   return (
     <div className="flex flex-1 flex-col">
       <div className="mx-auto w-full max-w-[1120px] px-6 pt-14 pb-8 sm:pt-16 sm:pb-10">
-        <h1 className="text-center text-[1.7rem] leading-[1.12] tracking-[-0.05em] text-black sm:text-[2.5rem] dark:text-white">
+        <h1 className="font-everett-medium text-center text-[1.7rem] leading-[1.12] tracking-[-0.05em] text-black sm:text-[2.5rem] dark:text-white">
           Privacy
         </h1>
       </div>
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
                 href="https://github.com/gradientaistudio/ui"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-black underline underline-offset-2 dark:text-white"
+                className="text-neon-blue underline underline-offset-2"
               >
                 GitHub repository
               </a>

@@ -1,9 +1,14 @@
+@config "../tailwind.config.ts";
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme inline {
+@theme {
   --color-charcoal: #1b1b1e;
+  --color-drk-charcoal: #171719;
+  --color-neon: #afff00;
+  --color-neon-blue: #4d4dff;
+  --color-teal: #30c1a5;
   --color-vanilla: #faf9f3;
   --font-sans: "SuisseIntl-Regular", Helvetica, sans-serif;
 }
@@ -99,6 +104,63 @@ body {
     transform: scale(22);
     opacity: 0;
   }
+}
+
+.nav-frame {
+  width: 100%;
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0.375rem 1.5rem 0;
+}
+
+.nav-frame.is-compact {
+  max-width: 720px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .nav-frame {
+    padding-top: 0.75rem;
+  }
+
+  .nav-frame.is-compact {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+.nav-frame.is-ready {
+  transition:
+    max-width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-shell:not(.is-compact) {
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+
+.nav-shell.is-ready {
+  transition:
+    background-color 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gradient-mark-rect {
+  rx: 147.27px;
+  ry: 147.27px;
+  transition: rx 0.55s cubic-bezier(0.22, 1, 0.36, 1), ry 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gradient-mark-rect.is-circle {
+  rx: 270px;
+  ry: 270px;
 }
 
 @media (prefers-reduced-motion: reduce) {

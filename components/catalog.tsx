@@ -1,125 +1,51 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import CatalogFilter from "@/components/catalog-filter";
 import ContentSheet from "@/components/content-sheet";
 import Icons from "@/components/icons";
+import PageHero from "@/components/page-hero";
 import { CardPreview } from "@/components/previews";
 import RippleIconButton from "@/components/ripple-icon-button";
 import { components } from "@/lib/components";
 
-type CatalogView = "components" | "icons";
-
-const VIEW_TABS: { id: CatalogView; label: string; href: string }[] = [
-  { id: "components", label: "Components", href: "/" },
-  { id: "icons", label: "Icons", href: "/icons" },
-];
-
-function ViewToggle({ view }: { view: CatalogView }) {
-  const listRef = useRef<HTMLDivElement>(null);
-  const indicatorRef = useRef<HTMLDivElement>(null);
-  const buttonRefs = useRef<Partial<Record<CatalogView, HTMLAnchorElement | null>>>({});
-  const hasPlaced = useRef(false);
-  const [hovered, setHovered] = useState<CatalogView | null>(null);
-  const highlightId = hovered ?? view;
-
-  const measure = useCallback((id: CatalogView) => {
-    const list = listRef.current;
-    const button = buttonRefs.current[id];
-    if (!list || !button) return null;
-    const listRect = list.getBoundingClientRect();
-    const buttonRect = button.getBoundingClientRect();
-    return {
-      left: buttonRect.left - listRect.left,
-      width: buttonRect.width,
-      height: buttonRect.height,
-    };
-  }, []);
-
-  useLayoutEffect(() => {
-    const indicator = indicatorRef.current;
-    const box = measure(highlightId);
-    if (!indicator || !box) return;
-
-    const place = (animate: boolean) => {
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      indicator.style.transition =
-        animate && !reduce ? "left 200ms ease-out, width 200ms ease-out, height 200ms ease-out" : "none";
-      indicator.style.left = `${box.left}px`;
-      indicator.style.width = `${box.width}px`;
-      indicator.style.height = `${box.height}px`;
-      indicator.style.opacity = "1";
-    };
-
-    place(hasPlaced.current);
-    hasPlaced.current = true;
-
-    const frame = requestAnimationFrame(() => {
-      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        indicator.style.transition = "left 200ms ease-out, width 200ms ease-out, height 200ms ease-out";
-      }
-    });
-
-    const onResize = () => {
-      const next = measure(highlightId);
-      if (!next) return;
-      indicator.style.transition = "none";
-      indicator.style.left = `${next.left}px`;
-      indicator.style.width = `${next.width}px`;
-      indicator.style.height = `${next.height}px`;
-    };
-
-    window.addEventListener("resize", onResize);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("resize", onResize);
-    };
-  }, [highlightId, measure]);
-
-  return (
-    <div ref={listRef} className="relative inline-flex shrink-0" onMouseLeave={() => setHovered(null)}>
-      <div
-        ref={indicatorRef}
-        aria-hidden
-        className="pointer-events-none absolute top-0 rounded-full bg-black/[0.06] opacity-0 dark:bg-white/[0.10]"
-      />
-      {VIEW_TABS.map((tab) => (
-        <Link
-          key={tab.id}
-          href={tab.href}
-          ref={(node) => {
-            buttonRefs.current[tab.id] = node;
-          }}
-          aria-current={view === tab.id ? "page" : undefined}
-          onMouseEnter={() => setHovered(tab.id)}
-          className="font-geist-medium relative z-10 rounded-full px-5 py-2 text-sm text-black dark:text-white"
-        >
-          {tab.label}
-        </Link>
-      ))}
-    </div>
-  );
-}
+const COMPONENT_CATEGORIES = [
+  "All",
+  "Accordion",
+  "Button",
+  "Checkbox",
+  "Input",
+  "Radio",
+  "Switch",
+  "Tabs",
+  "Textarea",
+] as const;
 
 export default function Catalog({ view }: { view: "components" | "icons" }) {
   const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<string>("All");
   const [clearing, setClearing] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const clearHideRef = useRef<number>(0);
 
+  useEffect(() => {
+    setCategory("All");
+  }, [view]);
+
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    if (!needle) return components;
-    return components.filter((item) => item.name.toLowerCase().includes(needle));
-  }, [query]);
+    return components.filter((item) => {
+      const matchesQuery = !needle || item.name.toLowerCase().includes(needle);
+      const matchesCategory =
+        category === "All" || item.name.toLowerCase().includes(category.toLowerCase());
+      return matchesQuery && matchesCategory;
+    });
+  }, [query, category]);
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="mx-auto w-full max-w-[1120px] px-6 pt-14 pb-8 sm:pt-16 sm:pb-10">
-        <h1 className="font-everett-medium mx-auto max-w-[24em] text-center text-[1.7rem] leading-[1.12] tracking-[-0.05em] text-black sm:text-[2.5rem] dark:text-white">
-          Open source React and Tailwind CSS UI components, designed to kickstart your next project.
-        </h1>
-      </div>
+      <PageHero title={view === "icons" ? "Icons" : "Components"} />
 
       <ContentSheet>
       <div className="flex h-14 items-center gap-3 pr-2">
@@ -171,7 +97,15 @@ export default function Catalog({ view }: { view: "components" | "icons" }) {
             </svg>
           </RippleIconButton>
         ) : null}
-        <ViewToggle view={view} />
+        {view === "components" ? (
+          <div className="ml-auto">
+            <CatalogFilter
+              categories={[...COMPONENT_CATEGORIES]}
+              value={category}
+              onChange={setCategory}
+            />
+          </div>
+        ) : null}
       </div>
 
       {view === "components" ? (

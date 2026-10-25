@@ -18,7 +18,13 @@ function setThemeCookie(theme: "dark" | "light") {
   document.cookie = `theme=${theme}; path=/; max-age=31536000; samesite=lax`;
 }
 
-export default function ThemeToggle({ initialDark = false }: { initialDark?: boolean }) {
+export default function ThemeToggle({
+  initialDark = false,
+  compact = false,
+}: {
+  initialDark?: boolean;
+  compact?: boolean;
+}) {
   const [isDark, setIsDark] = useState(initialDark);
 
   function toggleDarkMode() {
@@ -35,7 +41,7 @@ export default function ThemeToggle({ initialDark = false }: { initialDark?: boo
       type="button"
       onClick={toggleDarkMode}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className="cursor-pointer p-2 text-black transition-all duration-300 hover:scale-90 dark:text-white"
+      className={`flex size-8 cursor-pointer items-center justify-center text-black transition-transform duration-300 hover:scale-90 dark:text-white lg:size-auto ${compact ? "lg:p-0" : "lg:p-1"}`}
     >
       {isDark ? <MoonIcon /> : <SunIcon />}
     </button>

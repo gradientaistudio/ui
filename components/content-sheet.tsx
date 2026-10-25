@@ -1,3 +1,8 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+
 export default function ContentSheet({
   children,
   className = "mt-12",
@@ -5,8 +10,29 @@ export default function ContentSheet({
   children: React.ReactNode;
   className?: string;
 }) {
+  const sheetRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!sheetRef.current) return;
+    const tween = gsap.to(sheetRef.current, {
+      opacity: 1,
+      filter: "blur(0px)",
+      y: 0,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.12,
+    });
+    return () => {
+      tween.kill();
+    };
+  }, []);
+
   return (
-    <section className={`flex flex-1 flex-col rounded-[2rem] bg-black/3 dark:bg-[#111] ${className}`}>
+    <section
+      ref={sheetRef}
+      className={`flex flex-1 flex-col rounded-[2rem] bg-black/3 dark:bg-[#111] ${className}`}
+      style={{ opacity: 0, filter: "blur(8px)", transform: "translateY(30px)" }}
+    >
       <div className="mx-auto w-full max-w-[1120px] flex-1 px-6 pt-8 pb-10">{children}</div>
     </section>
   );
