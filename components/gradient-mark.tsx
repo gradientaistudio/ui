@@ -15,10 +15,10 @@ export default function GradientMark({
       <rect
         width="540"
         height="540"
-        className={`gradient-mark-rect fill-black${round ? " is-circle" : ""}`}
+        className={`gradient-mark-rect fill-black dark:fill-white${round ? " is-circle" : ""}`}
       />
       <path
-        className="fill-[#faf9f3] dark:fill-white"
+        className="fill-vanilla dark:fill-charcoal"
         d="M253.12,135v67.5c0,27.96-22.67,50.62-50.63,50.62h-67.5v33.75h67.5c27.96,0,50.63,22.67,50.63,50.63v67.5h33.75v-67.5c0-27.96,22.67-50.63,50.63-50.63h67.5v-33.75h-67.5c-27.96,0-50.63-22.67-50.63-50.62v-67.5h-33.75Z"
       />
     </svg>
