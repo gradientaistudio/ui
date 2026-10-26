@@ -107,6 +107,13 @@ export default function DocsShell({ children }: { children: React.ReactNode }) {
   }, [highlightId, measure]);
 
   useEffect(() => {
+    const root = document.documentElement;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduce) root.classList.add("scroll-smooth");
+    return () => root.classList.remove("scroll-smooth");
+  }, []);
+
+  useEffect(() => {
     const sections = NAV.map((item) => document.getElementById(item.id)).filter(
       (el): el is HTMLElement => Boolean(el),
     );
