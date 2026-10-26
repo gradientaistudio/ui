@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import PreviewColumn from "@/components/preview-column";
+import { runWhenMobileMenuClear } from "@/lib/when-mobile-menu-clear";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,125 +18,127 @@ export default function Hero() {
   const textWrapperRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    let ctx: gsap.Context | undefined;
-    const timeoutId = window.setTimeout(() => {
-      requestAnimationFrame(() => {
-        if (!projectRef.current) return;
+    return runWhenMobileMenuClear(() => {
+      let ctx: gsap.Context | undefined;
+      const timeoutId = window.setTimeout(() => {
+        requestAnimationFrame(() => {
+          if (!projectRef.current) return;
 
-        ctx = gsap.context(() => {
-          if (textWrapperRef.current) {
-            const rect = textWrapperRef.current.getBoundingClientRect();
-            const isInView = rect.top < window.innerHeight * 0.8;
+          ctx = gsap.context(() => {
+            if (textWrapperRef.current) {
+              const rect = textWrapperRef.current.getBoundingClientRect();
+              const isInView = rect.top < window.innerHeight * 0.8;
 
-            if (isInView) {
-              gsap.to(textWrapperRef.current, {
-                opacity: 1,
-                filter: "blur(0px)",
-                y: 0,
-                duration: 1,
-                ease: "power3.out",
-              });
-            } else {
-              gsap.fromTo(
-                textWrapperRef.current,
-                { opacity: 0, filter: "blur(8px)", y: 30 },
-                {
+              if (isInView) {
+                gsap.to(textWrapperRef.current, {
                   opacity: 1,
                   filter: "blur(0px)",
                   y: 0,
                   duration: 1,
                   ease: "power3.out",
-                  scrollTrigger: {
-                    trigger: textWrapperRef.current,
-                    start: "top 80%",
-                    toggleActions: "play none none reverse",
+                });
+              } else {
+                gsap.fromTo(
+                  textWrapperRef.current,
+                  { opacity: 0, filter: "blur(8px)", y: 30 },
+                  {
+                    opacity: 1,
+                    filter: "blur(0px)",
+                    y: 0,
+                    duration: 1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                      trigger: textWrapperRef.current,
+                      start: "top 80%",
+                      toggleActions: "play none none reverse",
+                      immediateRender: false,
+                    },
                     immediateRender: false,
                   },
-                  immediateRender: false,
+                );
+              }
+            }
+
+            if (wrapperRef.current) {
+              gsap.to(wrapperRef.current, {
+                width: "100%",
+                opacity: 1,
+                duration: 1.2,
+                ease: "power3.out",
+              });
+            }
+
+            if (gridRef.current) {
+              gsap.to(gridRef.current, {
+                opacity: 1,
+                visibility: "visible",
+                duration: 1,
+                ease: "power3.out",
+              });
+            }
+
+            if (componentRef1.current) {
+              gsap.fromTo(
+                componentRef1.current,
+                { y: -200 },
+                {
+                  y: -400,
+                  force3D: true,
+                  scrollTrigger: {
+                    trigger: projectRef.current,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true,
+                    invalidateOnRefresh: true,
+                  },
                 },
               );
             }
-          }
 
-          if (wrapperRef.current) {
-            gsap.to(wrapperRef.current, {
-              width: "100%",
-              opacity: 1,
-              duration: 1.2,
-              ease: "power3.out",
-            });
-          }
-
-          if (gridRef.current) {
-            gsap.to(gridRef.current, {
-              opacity: 1,
-              visibility: "visible",
-              duration: 1,
-              ease: "power3.out",
-            });
-          }
-
-          if (componentRef1.current) {
-            gsap.fromTo(
-              componentRef1.current,
-              { y: -200 },
-              {
-                y: -400,
-                force3D: true,
-                scrollTrigger: {
-                  trigger: projectRef.current,
-                  start: "top bottom",
-                  end: "bottom top",
-                  scrub: true,
-                  invalidateOnRefresh: true,
+            if (componentRef2.current) {
+              gsap.fromTo(
+                componentRef2.current,
+                { y: 200 },
+                {
+                  y: 300,
+                  force3D: true,
+                  scrollTrigger: {
+                    trigger: projectRef.current,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true,
+                    invalidateOnRefresh: true,
+                  },
                 },
-              },
-            );
-          }
+              );
+            }
 
-          if (componentRef2.current) {
-            gsap.fromTo(
-              componentRef2.current,
-              { y: 200 },
-              {
-                y: 300,
-                force3D: true,
-                scrollTrigger: {
-                  trigger: projectRef.current,
-                  start: "top bottom",
-                  end: "bottom top",
-                  scrub: true,
-                  invalidateOnRefresh: true,
+            if (componentRef3.current) {
+              gsap.fromTo(
+                componentRef3.current,
+                { y: -300 },
+                {
+                  y: -600,
+                  force3D: true,
+                  scrollTrigger: {
+                    trigger: projectRef.current,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true,
+                    invalidateOnRefresh: true,
+                  },
                 },
-              },
-            );
-          }
+              );
+            }
+          }, projectRef);
+        });
+      }, 100);
 
-          if (componentRef3.current) {
-            gsap.fromTo(
-              componentRef3.current,
-              { y: -300 },
-              {
-                y: -600,
-                force3D: true,
-                scrollTrigger: {
-                  trigger: projectRef.current,
-                  start: "top bottom",
-                  end: "bottom top",
-                  scrub: true,
-                  invalidateOnRefresh: true,
-                },
-              },
-            );
-          }
-        }, projectRef);
-      });
-    }, 100);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      ctx?.revert();
-    };
+      return () => {
+        window.clearTimeout(timeoutId);
+        ctx?.revert();
+      };
+    });
   }, []);
 
   return (

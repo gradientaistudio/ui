@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { runWhenMobileMenuClear } from "@/lib/when-mobile-menu-clear";
 
 export default function ContentSheet({
   children,
@@ -13,18 +14,20 @@ export default function ContentSheet({
   const sheetRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (!sheetRef.current) return;
-    const tween = gsap.to(sheetRef.current, {
-      opacity: 1,
-      filter: "blur(0px)",
-      y: 0,
-      duration: 1,
-      ease: "power3.out",
-      delay: 0.12,
+    return runWhenMobileMenuClear(() => {
+      if (!sheetRef.current) return () => {};
+      const tween = gsap.to(sheetRef.current, {
+        opacity: 1,
+        filter: "blur(0px)",
+        y: 0,
+        duration: 1,
+        ease: "power3.out",
+        delay: 0.12,
+      });
+      return () => {
+        tween.kill();
+      };
     });
-    return () => {
-      tween.kill();
-    };
   }, []);
 
   return (

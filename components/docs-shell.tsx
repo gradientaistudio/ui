@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { runWhenMobileMenuClear } from "@/lib/when-mobile-menu-clear";
 
 const NAV = [
   { id: "introduction", label: "Introduction" },
@@ -30,18 +31,20 @@ export default function DocsShell({ children }: { children: React.ReactNode }) {
   const highlightId = hovered ?? active;
 
   useEffect(() => {
-    if (!sheetRef.current) return;
-    const tween = gsap.to(sheetRef.current, {
-      opacity: 1,
-      filter: "blur(0px)",
-      y: 0,
-      duration: 1,
-      ease: "power3.out",
-      delay: 0.12,
+    return runWhenMobileMenuClear(() => {
+      if (!sheetRef.current) return () => {};
+      const tween = gsap.to(sheetRef.current, {
+        opacity: 1,
+        filter: "blur(0px)",
+        y: 0,
+        duration: 1,
+        ease: "power3.out",
+        delay: 0.12,
+      });
+      return () => {
+        tween.kill();
+      };
     });
-    return () => {
-      tween.kill();
-    };
   }, []);
 
   const measure = useCallback((id: NavId) => {

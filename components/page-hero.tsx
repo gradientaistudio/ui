@@ -2,22 +2,25 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { runWhenMobileMenuClear } from "@/lib/when-mobile-menu-clear";
 
 export default function PageHero({ title }: { title: string }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
-    if (!titleRef.current) return;
-    const tween = gsap.to(titleRef.current, {
-      opacity: 1,
-      filter: "blur(0px)",
-      y: 0,
-      duration: 1,
-      ease: "power3.out",
+    return runWhenMobileMenuClear(() => {
+      if (!titleRef.current) return () => {};
+      const tween = gsap.to(titleRef.current, {
+        opacity: 1,
+        filter: "blur(0px)",
+        y: 0,
+        duration: 1,
+        ease: "power3.out",
+      });
+      return () => {
+        tween.kill();
+      };
     });
-    return () => {
-      tween.kill();
-    };
   }, [title]);
 
   return (

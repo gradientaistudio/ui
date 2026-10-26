@@ -65,6 +65,10 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
   const [ready, setReady] = useState(false);
   const closeTimerRef = useRef<number | null>(null);
   const openRafRef = useRef<number | null>(null);
+  const pathInitRef = useRef(true);
+  const menuMountedRef = useRef(false);
+
+  menuMountedRef.current = menuMounted;
 
   const clearCloseTimer = useCallback(() => {
     if (closeTimerRef.current !== null) {
@@ -89,7 +93,8 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
     });
   }, [clearCloseTimer]);
 
-  const closeMobile = useCallback(() => {
+  /** Close over the current page (X / Escape / logo on home). */
+  const dismissMobile = useCallback(() => {
     clearCloseTimer();
     if (openRafRef.current !== null) {
       window.cancelAnimationFrame(openRafRef.current);
@@ -103,21 +108,54 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
     }, MENU_FADE_MS);
   }, [clearCloseTimer]);
 
+  /**
+   * Keep the menu covering until the new route has painted, then fade it out.
+   * Page reveals stay deferred until data-mobile-menu is cleared.
+   */
+  const closeAfterNavigate = useCallback(() => {
+    clearCloseTimer();
+    if (openRafRef.current !== null) {
+      window.cancelAnimationFrame(openRafRef.current);
+      openRafRef.current = null;
+    }
+
+    document.documentElement.dataset.mobileMenu = "open";
+    setMenuMounted(true);
+    setMenuVisible(true);
+
+    openRafRef.current = window.requestAnimationFrame(() => {
+      openRafRef.current = window.requestAnimationFrame(() => {
+        setMenuVisible(false);
+        document.documentElement.dataset.mobileMenu = "closing";
+        openRafRef.current = null;
+        closeTimerRef.current = window.setTimeout(() => {
+          setMenuMounted(false);
+          document.documentElement.removeAttribute("data-mobile-menu");
+          closeTimerRef.current = null;
+        }, MENU_FADE_MS);
+      });
+    });
+  }, [clearCloseTimer]);
+
   useEffect(() => {
-    closeMobile();
-  }, [pathname, closeMobile]);
+    if (pathInitRef.current) {
+      pathInitRef.current = false;
+      return;
+    }
+    if (!menuMountedRef.current) return;
+    closeAfterNavigate();
+  }, [pathname, closeAfterNavigate]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") closeMobile();
+      if (event.key === "Escape") dismissMobile();
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [closeMobile]);
+  }, [dismissMobile]);
 
   useEffect(() => {
-    const locked = menuMounted;
-    document.body.style.overflow = locked ? "hidden" : "";
+    document.body.style.overflow = menuMounted ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
@@ -185,9 +223,9 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
                 href="/"
                 className="flex items-center gap-2 text-black dark:text-white"
                 onClick={(event) => {
-                  closeMobile();
                   if (pathname === "/") {
                     event.preventDefault();
+                    dismissMobile();
                     window.scrollTo(0, 0);
                   }
                 }}
@@ -204,7 +242,7 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
                   <ThemeToggle initialDark={isDark} compact={compact} />
                   <button
                     type="button"
-                    onClick={() => (mobileOpen ? closeMobile() : openMobile())}
+                    onClick={() => (mobileOpen ? dismissMobile() : openMobile())}
                     className="flex size-10 cursor-pointer items-center justify-center rounded-full border border-black/[0.08] bg-white/40 text-black shadow-[0_1px_2px_rgba(0,0,0,0.04)] backdrop-blur-xl hover:bg-white/60 active:scale-[0.97] dark:border-white/[0.06] dark:bg-black/40 dark:text-white dark:hover:bg-black/60 lg:hidden"
                     aria-label={mobileOpen ? "Close menu" : "Open menu"}
                     aria-expanded={mobileOpen}
@@ -228,7 +266,9 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
                 <Link
                   key={tab.id}
                   href={tab.href}
-                  onClick={closeMobile}
+                  onClick={() => {
+                    if (pathname === tab.href) dismissMobile();
+                  }}
                   tabIndex={menuVisible ? undefined : -1}
                   className={`font-geist-medium block py-4 text-base text-black dark:text-white ${
                     index === VIEW_TABS.length - 1
