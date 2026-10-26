@@ -1,24 +1,29 @@
-/** Runs after the mobile menu cover is gone so page reveals don't flash underneath. */
+function isMenuCovering() {
+  const state = document.documentElement.dataset.mobileMenu;
+  return state === "open";
+}
+
+/**
+ * Runs page reveal animations once the mobile menu cover lifts.
+ * `reveal` (and no attribute) both count as clear so the menu fade and
+ * content fade can start together — avoids a double-pop on iOS Safari.
+ */
 export function runWhenMobileMenuClear(run: () => () => void): () => void {
   let teardown: (() => void) | undefined;
   let observer: MutationObserver | null = null;
+  let started = false;
 
   const start = () => {
+    if (started) return;
+    started = true;
+    observer?.disconnect();
+    observer = null;
     teardown = run();
   };
 
-  const blocked =
-    document.documentElement.dataset.mobileMenu === "open" ||
-    document.documentElement.dataset.mobileMenu === "closing";
-
-  if (blocked) {
+  if (isMenuCovering()) {
     observer = new MutationObserver(() => {
-      const state = document.documentElement.dataset.mobileMenu;
-      if (state !== "open" && state !== "closing") {
-        observer?.disconnect();
-        observer = null;
-        start();
-      }
+      if (!isMenuCovering()) start();
     });
     observer.observe(document.documentElement, {
       attributes: true,

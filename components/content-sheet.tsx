@@ -16,14 +16,19 @@ export default function ContentSheet({
   useEffect(() => {
     return runWhenMobileMenuClear(() => {
       if (!sheetRef.current) return () => {};
-      const tween = gsap.to(sheetRef.current, {
-        opacity: 1,
-        filter: "blur(0px)",
-        y: 0,
-        duration: 1,
-        ease: "power3.out",
-        delay: 0.12,
-      });
+      const tween = gsap.fromTo(
+        sheetRef.current,
+        { opacity: 0, filter: "blur(8px)", y: 30 },
+        {
+          opacity: 1,
+          filter: "blur(0px)",
+          y: 0,
+          duration: 1,
+          ease: "power3.out",
+          delay: 0.12,
+          overwrite: "auto",
+        },
+      );
       return () => {
         tween.kill();
       };

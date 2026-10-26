@@ -67,8 +67,17 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
   const openRafRef = useRef<number | null>(null);
   const pathInitRef = useRef(true);
   const menuMountedRef = useRef(false);
+  const navCloseLockRef = useRef(false);
+  const lastPathRef = useRef(pathname);
 
   menuMountedRef.current = menuMounted;
+
+  const cancelRafs = useCallback(() => {
+    if (openRafRef.current !== null) {
+      window.cancelAnimationFrame(openRafRef.current);
+      openRafRef.current = null;
+    }
+  }, []);
 
   const clearCloseTimer = useCallback(() => {
     if (closeTimerRef.current !== null) {
@@ -78,11 +87,9 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
   }, []);
 
   const openMobile = useCallback(() => {
+    navCloseLockRef.current = false;
     clearCloseTimer();
-    if (openRafRef.current !== null) {
-      window.cancelAnimationFrame(openRafRef.current);
-      openRafRef.current = null;
-    }
+    cancelRafs();
     setMenuMounted(true);
     document.documentElement.dataset.mobileMenu = "open";
     openRafRef.current = window.requestAnimationFrame(() => {
@@ -91,60 +98,64 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
         openRafRef.current = null;
       });
     });
-  }, [clearCloseTimer]);
+  }, [cancelRafs, clearCloseTimer]);
 
   /** Close over the current page (X / Escape / logo on home). */
   const dismissMobile = useCallback(() => {
+    navCloseLockRef.current = false;
     clearCloseTimer();
-    if (openRafRef.current !== null) {
-      window.cancelAnimationFrame(openRafRef.current);
-      openRafRef.current = null;
-    }
+    cancelRafs();
     setMenuVisible(false);
     document.documentElement.removeAttribute("data-mobile-menu");
     closeTimerRef.current = window.setTimeout(() => {
       setMenuMounted(false);
       closeTimerRef.current = null;
     }, MENU_FADE_MS);
-  }, [clearCloseTimer]);
-
-  /**
-   * Keep the menu covering until the new route has painted, then fade it out.
-   * Page reveals stay deferred until data-mobile-menu is cleared.
-   */
-  const closeAfterNavigate = useCallback(() => {
-    clearCloseTimer();
-    if (openRafRef.current !== null) {
-      window.cancelAnimationFrame(openRafRef.current);
-      openRafRef.current = null;
-    }
-
-    document.documentElement.dataset.mobileMenu = "open";
-    setMenuMounted(true);
-    setMenuVisible(true);
-
-    openRafRef.current = window.requestAnimationFrame(() => {
-      openRafRef.current = window.requestAnimationFrame(() => {
-        setMenuVisible(false);
-        document.documentElement.dataset.mobileMenu = "closing";
-        openRafRef.current = null;
-        closeTimerRef.current = window.setTimeout(() => {
-          setMenuMounted(false);
-          document.documentElement.removeAttribute("data-mobile-menu");
-          closeTimerRef.current = null;
-        }, MENU_FADE_MS);
-      });
-    });
-  }, [clearCloseTimer]);
+  }, [cancelRafs, clearCloseTimer]);
 
   useEffect(() => {
     if (pathInitRef.current) {
       pathInitRef.current = false;
+      lastPathRef.current = pathname;
       return;
     }
-    if (!menuMountedRef.current) return;
-    closeAfterNavigate();
-  }, [pathname, closeAfterNavigate]);
+
+    if (lastPathRef.current === pathname) return;
+    lastPathRef.current = pathname;
+
+    if (!menuMountedRef.current || navCloseLockRef.current) return;
+
+    navCloseLockRef.current = true;
+    clearCloseTimer();
+    cancelRafs();
+
+    // Stay covered through the route paint; don't re-toggle visible (restarts CSS on iOS).
+    document.documentElement.dataset.mobileMenu = "open";
+    setMenuMounted(true);
+
+    let raf2 = 0;
+    const raf1 = window.requestAnimationFrame(() => {
+      raf2 = window.requestAnimationFrame(() => {
+        // Menu fades out while page reveal starts in the same beat.
+        setMenuVisible(false);
+        document.documentElement.dataset.mobileMenu = "reveal";
+        closeTimerRef.current = window.setTimeout(() => {
+          setMenuMounted(false);
+          document.documentElement.removeAttribute("data-mobile-menu");
+          navCloseLockRef.current = false;
+          closeTimerRef.current = null;
+        }, MENU_FADE_MS);
+      });
+    });
+    openRafRef.current = raf1;
+
+    return () => {
+      window.cancelAnimationFrame(raf1);
+      window.cancelAnimationFrame(raf2);
+      clearCloseTimer();
+      navCloseLockRef.current = false;
+    };
+  }, [pathname, cancelRafs, clearCloseTimer]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {

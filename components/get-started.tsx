@@ -102,7 +102,7 @@ export default function GetStarted() {
     <div ref={sectionRef} className="mx-auto w-full max-w-screen-xl px-4">
       <div
         ref={cardRef}
-        className="relative flex h-[300px] w-full items-center justify-center overflow-hidden rounded-3xl border border-black/10 bg-black/[0.02] px-6 lg:h-[600px] dark:border-white/20 dark:bg-white/[0.03]"
+        className="relative flex min-h-[300px] w-full items-center justify-center overflow-hidden rounded-3xl border border-black/10 bg-black/[0.02] px-6 py-16 sm:py-20 lg:h-[600px] lg:min-h-0 lg:py-0 dark:border-white/20 dark:bg-white/[0.03]"
       >
         <div className="absolute inset-0 z-0" aria-hidden>
           <PerspectiveGrid columnRef1={columnRef1} columnRef2={columnRef2} columnRef3={columnRef3} />

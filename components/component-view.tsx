@@ -25,13 +25,18 @@ export default function ComponentView({
   useEffect(() => {
     return runWhenMobileMenuClear(() => {
       if (!headerRef.current) return () => {};
-      const tween = gsap.to(headerRef.current, {
-        opacity: 1,
-        filter: "blur(0px)",
-        y: 0,
-        duration: 1,
-        ease: "power3.out",
-      });
+      const tween = gsap.fromTo(
+        headerRef.current,
+        { opacity: 0, filter: "blur(8px)", y: 30 },
+        {
+          opacity: 1,
+          filter: "blur(0px)",
+          y: 0,
+          duration: 1,
+          ease: "power3.out",
+          overwrite: "auto",
+        },
+      );
       return () => {
         tween.kill();
       };
