@@ -9,7 +9,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <>
       <SiteHeader isDark={isDark} />
-      <main className="flex flex-1 flex-col">{children}</main>
+      <main className="site-main flex flex-1 flex-col">{children}</main>
       <SiteFooter />
     </>
   );

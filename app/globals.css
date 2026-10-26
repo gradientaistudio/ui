@@ -176,9 +176,29 @@ body {
   fill: var(--color-charcoal);
 }
 
+.site-main,
+.site-footer {
+  transition: opacity 0.35s ease;
+}
+
+@media (max-width: 1023px) {
+  html[data-mobile-menu="open"] .site-main,
+  html[data-mobile-menu="open"] .site-footer {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .btn-scale > .copy-btn-ripple {
     animation: none;
     opacity: 0;
+  }
+
+  .site-main,
+  .site-footer,
+  .mobile-menu-layer,
+  .mobile-menu-nav {
+    transition-duration: 0.01ms !important;
   }
 }

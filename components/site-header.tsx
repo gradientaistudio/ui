@@ -1,11 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import GradientMark from "@/components/gradient-mark";
 import ThemeToggle from "@/components/theme-toggle";
 import ViewToggle, { VIEW_TABS } from "@/components/view-toggle";
+
+const MENU_FADE_MS = 350;
 
 function IconMenuBars({ className }: { className?: string }) {
   return (
@@ -57,11 +59,49 @@ function GitHubLink({ compact = false }: { compact?: boolean }) {
 
 export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuMounted, setMenuMounted] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [ready, setReady] = useState(false);
+  const closeTimerRef = useRef<number | null>(null);
+  const openRafRef = useRef<number | null>(null);
 
-  const closeMobile = useCallback(() => setMobileOpen(false), []);
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  }, []);
+
+  const openMobile = useCallback(() => {
+    clearCloseTimer();
+    if (openRafRef.current !== null) {
+      window.cancelAnimationFrame(openRafRef.current);
+      openRafRef.current = null;
+    }
+    setMenuMounted(true);
+    document.documentElement.dataset.mobileMenu = "open";
+    openRafRef.current = window.requestAnimationFrame(() => {
+      openRafRef.current = window.requestAnimationFrame(() => {
+        setMenuVisible(true);
+        openRafRef.current = null;
+      });
+    });
+  }, [clearCloseTimer]);
+
+  const closeMobile = useCallback(() => {
+    clearCloseTimer();
+    if (openRafRef.current !== null) {
+      window.cancelAnimationFrame(openRafRef.current);
+      openRafRef.current = null;
+    }
+    setMenuVisible(false);
+    document.documentElement.removeAttribute("data-mobile-menu");
+    closeTimerRef.current = window.setTimeout(() => {
+      setMenuMounted(false);
+      closeTimerRef.current = null;
+    }, MENU_FADE_MS);
+  }, [clearCloseTimer]);
 
   useEffect(() => {
     closeMobile();
@@ -76,11 +116,20 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
   }, [closeMobile]);
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    const locked = menuMounted;
+    document.body.style.overflow = locked ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [mobileOpen]);
+  }, [menuMounted]);
+
+  useEffect(() => {
+    return () => {
+      clearCloseTimer();
+      if (openRafRef.current !== null) window.cancelAnimationFrame(openRafRef.current);
+      document.documentElement.removeAttribute("data-mobile-menu");
+    };
+  }, [clearCloseTimer]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 120);
@@ -98,19 +147,33 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
   }, []);
 
   const compact = scrolled;
+  const mobileOpen = menuVisible;
 
   return (
     <>
       <div className="h-[72px] shrink-0" aria-hidden />
       <div
         className={
-          mobileOpen
-            ? "fixed inset-0 z-50 overflow-y-auto bg-white dark:bg-[#151515] lg:contents"
+          menuMounted
+            ? `fixed inset-0 z-50 lg:contents ${menuVisible ? "overflow-y-auto" : "pointer-events-none overflow-hidden"}`
             : "fixed inset-x-0 top-0 z-50"
         }
       >
-        <div className={mobileOpen ? "flex min-h-dvh flex-col lg:contents" : undefined}>
-          <div className={`nav-frame${compact ? " is-compact" : ""}${ready ? " is-ready" : ""}`}>
+        {menuMounted ? (
+          <div
+            className={`mobile-menu-layer pointer-events-none absolute inset-0 bg-white transition-opacity duration-[350ms] ease-out lg:hidden dark:bg-[#151515] ${
+              menuVisible ? "opacity-100" : "opacity-0"
+            }`}
+            aria-hidden
+          />
+        ) : null}
+
+        <div className={menuMounted ? "relative flex min-h-dvh flex-col lg:contents" : undefined}>
+          <div
+            className={`nav-frame${compact ? " is-compact" : ""}${ready ? " is-ready" : ""}${
+              menuMounted && !menuVisible ? " pointer-events-auto" : ""
+            }`}
+          >
             <header
               className={`nav-shell flex w-full items-center justify-between ${
                 compact
@@ -141,9 +204,10 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
                   <ThemeToggle initialDark={isDark} compact={compact} />
                   <button
                     type="button"
-                    onClick={() => (mobileOpen ? closeMobile() : setMobileOpen(true))}
+                    onClick={() => (mobileOpen ? closeMobile() : openMobile())}
                     className="flex size-10 cursor-pointer items-center justify-center rounded-full border border-black/[0.08] bg-white/40 text-black shadow-[0_1px_2px_rgba(0,0,0,0.04)] backdrop-blur-xl hover:bg-white/60 active:scale-[0.97] dark:border-white/[0.06] dark:bg-black/40 dark:text-white dark:hover:bg-black/60 lg:hidden"
                     aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                    aria-expanded={mobileOpen}
                   >
                     {mobileOpen ? <IconClose className="size-5" /> : <IconMenuBars className="size-5" />}
                   </button>
@@ -152,13 +216,20 @@ export default function SiteHeader({ isDark = false }: { isDark?: boolean }) {
             </header>
           </div>
 
-          {mobileOpen ? (
-            <nav className="flex flex-1 flex-col px-6 pt-4 lg:hidden" aria-label="Mobile">
+          {menuMounted ? (
+            <nav
+              className={`mobile-menu-nav flex flex-1 flex-col px-6 pt-4 transition-opacity duration-[350ms] ease-out lg:hidden ${
+                menuVisible ? "opacity-100" : "opacity-0"
+              }`}
+              aria-label="Mobile"
+              aria-hidden={!menuVisible}
+            >
               {VIEW_TABS.map((tab, index) => (
                 <Link
                   key={tab.id}
                   href={tab.href}
                   onClick={closeMobile}
+                  tabIndex={menuVisible ? undefined : -1}
                   className={`font-geist-medium block py-4 text-base text-black dark:text-white ${
                     index === VIEW_TABS.length - 1
                       ? ""
