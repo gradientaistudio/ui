@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import Accordion from "@/components/ui/accordion";
 import AccordionUsage from "@/components/ui/accordion-usage";
 import Button from "@/components/ui/button";
@@ -64,31 +64,47 @@ function Panel({
   );
 }
 
-function CardCenter({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex h-full w-full items-center justify-center">
-      <div inert className="pointer-events-none text-black dark:text-white">
-        {children}
-      </div>
-    </div>
-  );
-}
+/** Scales content down (never up) so it fits the preview frame while keeping proportions. */
+function FitScale({ children, padding = 24 }: { children: ReactNode; padding?: number }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
 
-function CardStage({
-  children,
-  width,
-  scale,
-}: {
-  children: ReactNode;
-  width: number;
-  scale: number;
-}) {
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const content = contentRef.current;
+    if (!container || !content) return;
+
+    const update = () => {
+      // clientWidth/Height ignore CSS transforms (needed for 3D perspective previews).
+      const cw = container.clientWidth;
+      const ch = container.clientHeight;
+      const contentW = content.offsetWidth;
+      const contentH = content.offsetHeight;
+      if (contentW <= 0 || contentH <= 0 || cw <= 0 || ch <= 0) return;
+      const next = Math.min(1, (cw - padding * 2) / contentW, (ch - padding * 2) / contentH);
+      setScale(Number.isFinite(next) && next > 0 ? next : 1);
+    };
+
+    const ro = new ResizeObserver(() => {
+      requestAnimationFrame(update);
+    });
+    ro.observe(container);
+    ro.observe(content);
+    update();
+    return () => ro.disconnect();
+  }, [padding]);
+
   return (
-    <div className="relative h-full w-full">
+    <div
+      ref={containerRef}
+      className="flex h-full w-full items-center justify-center overflow-hidden"
+    >
       <div
+        ref={contentRef}
         inert
-        className="pointer-events-none absolute top-1/2 left-1/2 text-black dark:text-white"
-        style={{ width, transform: `translate(-50%, -50%) scale(${scale})` }}
+        className="pointer-events-none w-max shrink-0 origin-center text-black dark:text-white"
+        style={{ transform: `scale(${scale})` }}
       >
         {children}
       </div>
@@ -115,7 +131,7 @@ export function CardPreview({ slug }: { slug: ComponentSlug }) {
   switch (slug) {
     case "accordion":
       return (
-        <CardStage width={420} scale={0.72}>
+        <FitScale>
           <Accordion
             items={[
               {
@@ -132,75 +148,75 @@ export function CardPreview({ slug }: { slug: ComponentSlug }) {
               },
             ]}
           />
-        </CardStage>
+        </FitScale>
       );
     case "button-simple":
       return (
-        <CardCenter>
+        <FitScale>
           <Button>Button Simple</Button>
-        </CardCenter>
+        </FitScale>
       );
     case "button-ripple":
       return (
-        <CardCenter>
+        <FitScale>
           <ButtonRipple>Button Ripple</ButtonRipple>
-        </CardCenter>
+        </FitScale>
       );
     case "checkbox":
       return (
-        <CardCenter>
+        <FitScale>
           <Checkbox />
-        </CardCenter>
+        </FitScale>
       );
     case "input-pill":
       return (
-        <CardCenter>
+        <FitScale>
           <div className="w-[250px]">
             <InputUsage />
           </div>
-        </CardCenter>
+        </FitScale>
       );
     case "input-line":
       return (
-        <CardCenter>
+        <FitScale>
           <div className="w-[250px]">
             <InputLineUsage />
           </div>
-        </CardCenter>
+        </FitScale>
       );
     case "radio-group":
       return (
-        <CardStage width={520} scale={0.58}>
+        <FitScale>
           <RadioGroup options={["Option 1", "Option 2", "Option 3"]} />
-        </CardStage>
+        </FitScale>
       );
     case "switch":
       return (
-        <CardCenter>
+        <FitScale>
           <Switch />
-        </CardCenter>
+        </FitScale>
       );
     case "switch-2":
       return (
-        <CardCenter>
+        <FitScale>
           <Switch2 />
-        </CardCenter>
+        </FitScale>
       );
     case "tabs":
       return (
-        <CardStage width={460} scale={0.62}>
+        <FitScale>
           <div className="rounded-3xl p-3">
             <Tabs tabs={cardTabs} />
           </div>
-        </CardStage>
+        </FitScale>
       );
     case "textarea":
       return (
-        <CardCenter>
+        <FitScale>
           <div className="w-[250px]">
             <TextareaUsage />
           </div>
-        </CardCenter>
+        </FitScale>
       );
   }
 }

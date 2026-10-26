@@ -68,12 +68,12 @@ export default function Tabs({ tabs = defaultTabs }: { tabs?: Tab[] }) {
 
   return (
     <div className="max-w-md mx-auto text-black dark:text-white">
-      <div className="mb-2 flex space-x-2">
+      <div className="mb-2 flex flex-nowrap space-x-2">
         {tabs.map((tab, index) => (
           <button
             key={index}
             onClick={() => handleTabClick(index)}
-            className={`cursor-pointer inline-block py-2 px-4 rounded-full transition-all duration-300 ${
+            className={`cursor-pointer inline-block shrink-0 whitespace-nowrap rounded-full px-4 py-2 transition-all duration-300 ${
               activeTabIndex === index
                 ? 'bg-black/3 dark:bg-white/10'
                 : 'hover:bg-black/3 dark:hover:bg-white/10'
