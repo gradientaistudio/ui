@@ -153,14 +153,27 @@ body {
 }
 
 .gradient-mark-rect {
+  fill: #000;
   rx: 147.27px;
   ry: 147.27px;
   transition: rx 0.55s cubic-bezier(0.22, 1, 0.36, 1), ry 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.dark .gradient-mark-rect {
+  fill: #fff;
+}
+
 .gradient-mark-rect.is-circle {
   rx: 270px;
   ry: 270px;
+}
+
+.gradient-mark-glyph {
+  fill: var(--color-vanilla);
+}
+
+.dark .gradient-mark-glyph {
+  fill: var(--color-charcoal);
 }
 
 @media (prefers-reduced-motion: reduce) {
